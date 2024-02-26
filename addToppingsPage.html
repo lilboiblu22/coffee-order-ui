@@ -127,29 +127,38 @@ button{
   </body>
 
   <script>
-    //function that allows up to 4 toppings to be selected, and then adds them to the orderDetails div
+// a function that allows up to 4 toppings to be selected, and then adds them to the orderDetails div
     function selectToppings(){
       let orderDetails = document.querySelector(".orderDetails");
       let toppings = event.target.textContent;
       if(orderDetails.childElementCount < 5){
         let newTopping = document.createElement("h2");
         newTopping.textContent = toppings;
+        //trying to save to local storage
+        try{
+          let currentToppings = JSON.parse(localStorage.getItem("toppings"));
+          currentToppings.push(toppings);
+          localStorage.setItem("toppings", JSON.stringify(currentToppings));
+        }catch{
+          localStorage.setItem("toppings", JSON.stringify([toppings]));
+        }
         orderDetails.appendChild(newTopping);
       }
     }
 
-    //function that once user selects Selected Beverage, their beverage is erased and they are navigated back to the addBeveragePage
+// a function that once user selects Selected Beverage, their beverage is erased and they are navigated back to the addBeveragePage
     function sendBack(){
       let orderDetails = document.querySelector(".orderDetails");
       orderDetails.textContent = "";
       window.location.href = "addBeveragePage.html";
     }
 
-    //function that allows the user to submit their order, and saves their order details for use in next page
+// a function that allows the user to submit their order, and saves their order details for use in next page
     function submitOrder(){
       let orderDetails = document.querySelector(".orderDetails");
       let beverage = localStorage.getItem("beverage");
       let toppings = orderDetails.textContent;
+      //this does not seem to work, localstorage doesnt seem to be persisting
       localStorage.setItem("toppings", toppings);
       localStorage.setItem("beverage", beverage);
       window.location.href = "confirmationPage.html";
