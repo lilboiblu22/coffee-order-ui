@@ -90,7 +90,7 @@ button{
     function displayOrderDetails(){
       let orderDetails = JSON.parse(localStorage.getItem('orderDetails'));
       let p = document.createElement('p');
-      p.textContent = `You have ordered a ${orderDetails.size} ${orderDetails.beverage} with ${orderDetails.toppings.join(', ')}.`;
+      p.textContent = `Order: ${orderDetails.beverage} with ${orderDetails.toppings}`;
       document.body.appendChild(p);
     }
 
