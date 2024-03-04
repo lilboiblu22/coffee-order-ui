@@ -74,40 +74,73 @@ button{
           <li><h2><a href="orderStatus.html">Order Status</a></h2></li>
        </nav>
 
-       <h2>Order Placed:</h2>
-<!--  Unsuccessful attempt at displaying details, still working on this part for next assignment-->
-        <script>
-            displayOrderDetails();
-            displayOrderId();
-            displayTotal();
-        </script>
-
+       <div class="order-Details" id="orderDetails">
+        
+       </div>
+        
   </body>
 
   <script>
-    function displayOrderDetails(){
-      let orderDetails = JSON.parse(localStorage.getItem('orderDetails'));
-      let p = document.createElement('p');
-      //trying to append the order details to the confirmation page but it doesnt seem to show up when I call it
-      p.textContent = `Order: ${orderDetails.beverage} with ${orderDetails.toppings.join(', ')}`;
-      document.body.appendChild(p);
+    document.addEventListener("DOMContentLoaded",displayOrderDetails);
+
+    host = "https://coffee-order-latest-c3kl.onrender.com";
+
+    let orderDetailsString = getParameterByName('order');
+    let orderDetails = orderDetailsString ? JSON.parse(decodeURIComponent(orderDetailsString)) : null;
+    let selectedBeverage = orderDetails ? orderDetails.selectedBeverage : null;
+    let selectedCondiments = orderDetails ? orderDetails.condiments : null;
+
+    let orderDetailsDiv = document.getElementById('orderDetails');
+
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
 
-    function displayOrderId(){
-      //generating a random order ID
-      let orderId = Math.floor(Math.random() * 1000000);
-      let h2 = document.createElement('h2');
-      h2.textContent = `Order ID: ${orderId}`;
-      document.body.insertBefore(h2, document.body.firstChild);
-    }
+   async function displayOrderDetails(){
+      if (!selectedBeverage || !selectedCondiments) {
+        alert("Beverage or condiments are not selected");
+        return;
+      }
 
-    function displayTotal(){
-      //this will calculate a random value under 7 to be realistic to coffee prices lol
-      let total = (Math.random() * 7).toFixed(2);
-      let h2 = document.createElement('h2');
-      h2.textContent = `Total: $${total}`;
-      document.body.appendChild(h2);
+      let order = {beverage: selectedBeverage, condiments: selectedCondiments};
+
+      if (!["dark roast", "decaf", "espresso", "house blend"].includes(order.beverage.toLowerCase())) {
+        alert("Invalid beverage type");
+        return;
+      }
+      if (!order.condiments.every(condiment => ["milk", "mocha", "soy", "whip"].includes(condiment.toLowerCase()))) {
+        alert("Invalid condiment type");
+        return;
+      }
+      
+      request = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(order)
+      };
+      let response = await fetch(host + "/orders", request);
+      returnedOrder = await response.json();
+      message = "";
+      if (response.ok){
+        message = "Order successfully submitted"
+        orderDetailsDiv.innerHTML = `<h2>Order Details</h2>
+                                     <h3>Order ID: ${returnedOrder.id}</h3>
+                                     <h3>Beverage: ${returnedOrder.description}</h3>
+                                     <h3>Condiments: ${returnedOrder.cost}</h3>`;
+      }
+      else{
+        message = "Order submission failed";
+      }
+      alert(message);
     }
+    
 
   </script>
 

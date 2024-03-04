@@ -108,60 +108,68 @@ button{
        
        <div class = "allButtons">
         <div class="toppingsSelect"><h2> Select your Toppings </h2></div>
-       <button class="milk" onclick="selectToppings()">Milk</button>
-       <button class="mocha" onclick="selectToppings()">Mocha</button>
-       <button class="soy" onclick="selectToppings()">Soy</button>
-       <button class="whip" onclick="selectToppings()">Whip</button>
+       <button class="milk" onclick="selectToppings('Milk')">Milk</button>
+       <button class="mocha" onclick="selectToppings('Mocha')">Mocha</button>
+       <button class="soy" onclick="selectToppings('Soy')">Soy</button>
+       <button class="whip" onclick="selectToppings('Whip')">Whip</button>
        </div>
 
        <div class="orderDetailsFrame">
          <h2>My Order</h2>
          <div class="orderDetails">
-         <h3 onclick="sendBack()">Selected Beverage</h3>
-
+         <button><h3 id="selectedBeverageHeading">selectedBeverage</h3></button>
+          <ul id="condimentsList" onclick="removeCondiment(event)"></ul>
          </div>
-        <button class="submitOrder" onclick="submitOrder()">Submit Order</button>
+        <button onclick="submitOrder()">Submit Order</button>
        </div>
 
        </div>
   </body>
 
   <script>
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let selectedBeverage = urlParams.get("beverage");
+
+    let selectedBeverageButton = document.getElementById("selectedBeverageHeading");
+    selectedBeverageButton.textContent = selectedBeverage;
+
+    selectedBeverageButton.addEventListener("click", function(){
+      selectedBeverageButton.textContent = "";
+      window.location.href = "addBeveragePage.html";
+    });
+
 // a function that allows up to 4 toppings to be selected, and then adds them to the orderDetails div
-    function selectToppings(){
-      let orderDetails = document.querySelector(".orderDetails");
-      let toppings = event.target.textContent;
-      if(orderDetails.childElementCount < 5){
-        let newTopping = document.createElement("h2");
-        newTopping.textContent = toppings;
-        //trying to save to local storage
-        try{
-          let currentToppings = JSON.parse(localStorage.getItem("toppings"));
-          currentToppings.push(toppings);
-          localStorage.setItem("toppings", JSON.stringify(currentToppings));
-        }catch{
-          localStorage.setItem("toppings", JSON.stringify([toppings]));
-        }
-        orderDetails.appendChild(newTopping);
+    function selectToppings(condimentName){
+      let li = document.createElement("li");
+      let button = document.createElement("button");
+      button.textContent = condimentName;
+      button.classList.add("condiment");
+      li.appendChild(button);
+      condimentsList.appendChild(li);
+    }
+
+    function removeCondiment(event){
+      if (event.target.tagName === "BUTTON"){
+      event.target.remove();
       }
     }
 
-// a function that once user selects Selected Beverage, their beverage is erased and they are navigated back to the addBeveragePage
-    function sendBack(){
-      let orderDetails = document.querySelector(".orderDetails");
-      orderDetails.textContent = "";
-      window.location.href = "addBeveragePage.html";
-    }
 
 // a function that allows the user to submit their order, and saves their order details for use in next page
     function submitOrder(){
-      let orderDetails = document.querySelector(".orderDetails");
-      let beverage = localStorage.getItem("beverage");
-      let toppings = orderDetails.textContent;
-      //this does not seem to work, localstorage doesnt seem to be persisting
-      localStorage.setItem("toppings", toppings);
-      localStorage.setItem("beverage", beverage);
-      window.location.href = "confirmationPage.html";
+      
+      let condiments = Array.from(condimentsList.children)
+      .map(li => li.textContent.trim())
+      .filter(condiment => condiment !== '');
+
+      let orderDetails = {
+        selectedBeverage,
+        condiments
+      };
+
+      let orderDetailsString = encodeURIComponent(JSON.stringify(orderDetails));
+      window.location.href = `confirmationPage.html?order=${encodeURIComponent(orderDetailsString)}`;
     }
    
   </script>

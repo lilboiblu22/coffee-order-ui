@@ -91,10 +91,10 @@ button{
        <div class="beverageSelect"><h2> Select your Beverage </h2></div>
 
        <div class = "allButtons">
-       <button class="darkRoast" onclick="selectBeverage()">Dark Roast</button>
-       <button class="espresso" onclick="selectBeverage()">Espresso</button>
-       <button class="houseBlend" onclick="selectBeverage()">House Blend</button>
-       <button class="decaf" onclick="selectBeverage()">Decaf</button>
+       <button class="Dark Roast" onclick="selectBeverage()">Dark Roast</button>
+       <button class="Espresso" onclick="selectBeverage()">Espresso</button>
+       <button class="HouseBlend" onclick="selectBeverage()">House Blend</button>
+       <button class="Decaf" onclick="selectBeverage()">Decaf</button>
        </div>
 
   </body>
@@ -103,8 +103,25 @@ button{
     //when the user clicks on a button, we save that beverage name in a variable for use in the next page, they are then navigated to the next page
     function selectBeverage(){
       let beverage = event.target.className;
-      localStorage.setItem("beverage", beverage);
-      window.location.href = "addToppingsPage.html";
+
+      if (beverage === "Dark Roast"){
+        beverage = "Dark Roast";
+      }
+      else if (beverage === "Espresso"){
+        beverage = "Espresso";
+      }
+      else if (beverage === "HouseBlend"){
+        beverage = "House Blend";
+      }
+      else if (beverage === "Decaf"){
+        beverage = "Decaf";
+      }
+      else if (beverage == ""){
+        alert("Please select a beverage");
+      }
+      let urlParams = new URLSearchParams(window.location.search);
+      urlParams.set("beverage", beverage);
+      window.location.href = "addToppingsPage.html?" + urlParams.toString();
     }
   </script>
 
