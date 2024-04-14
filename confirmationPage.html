@@ -16,20 +16,6 @@ nav {
   padding: 1rem 2rem;
   background: #F8EACA;
 }
-
-nav ul {
-  display: flex;
-  list-style: none;
-}
-
-nav li {
-  padding-left: 1rem;
-}
-
-nav a {
-  text-decoration: none;
-  color: #0d47a1
-}
 body{
   background-color: #F8EACA;
 }
@@ -63,16 +49,17 @@ button{
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navbar.css">
     <title>Coffee Order System</title>
   </head>
 
   <body>
 
-    <nav>
-        <h2><a href="index.html">Coffee Order System</a></h2>
-        <ul>
-          <li><h2><a href="orderStatus.html">Order Status</a></h2></li>
-       </nav>
+    <ul class="topnav">
+      <li><a  href="index.html"><h1>Coffee Order System</h1></a></li>
+      <li><a href="orderStatus.html"><h1>Order Status</h1></a></li>
+      <li class="right"><a  class="active" href="login.html"><h1>Login</h1></a></li>
+    </ul>
 
        <div class="order-Details" id="orderDetails">
         
@@ -121,7 +108,8 @@ button{
       request = {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer + ${configuration.token()}'
         },
         body: JSON.stringify(order)
       };
